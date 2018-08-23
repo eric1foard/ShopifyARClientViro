@@ -1,0 +1,3 @@
+rootProject.name = 'ShopifyARClientViro'
+
+include ':app'
