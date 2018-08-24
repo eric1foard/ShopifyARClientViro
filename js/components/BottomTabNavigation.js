@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
-import { Icon } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Ionicons';
 import BrowseView from './BrowseView';
 import SearchView from './SearchView';
 import StoreView from './StoreView';
@@ -30,9 +30,9 @@ const routes = {
 };
 
 const icons = {
-  [BROWSE]: 'albums',
-  [SEARCH]: 'search',
-  [STORE]: 'basket'
+  [BROWSE]: 'close-circle', //'albums',
+  [SEARCH]: 'close-circle',//'search',
+  [STORE]: 'close-circle'//'basket'
   // TODO: icon for link to store
 };
 
@@ -46,7 +46,7 @@ const navigationOptions = ({ navigation }) => ({
     const iconNameFormatted = resolveIconName(icons[routeName], focused, PLATFORM);
     return (
       <Icon
-        name={iconNameFormatted}
+        iconName={iconNameFormatted}
         type='ionicon'
         size={25}
         color={tintColor}
