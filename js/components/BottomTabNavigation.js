@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { Icon } from 'react-native-elements';
 import BrowseView from './BrowseView';
 import SearchView from './SearchView';
 import StoreView from './StoreView';
@@ -46,7 +46,7 @@ const navigationOptions = ({ navigation }) => ({
     const iconNameFormatted = resolveIconName(icons[routeName], focused, PLATFORM);
     return (
       <Icon
-        iconName={iconNameFormatted}
+        name={iconNameFormatted}
         type='ionicon'
         size={25}
         color={tintColor}
