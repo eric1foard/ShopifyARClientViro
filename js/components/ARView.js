@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
-import { ViroARScene, ViroText } from 'react-viro';
+import {
+  ViroARSceneNavigator,
+  ViroARScene,
+  ViroText
+} from 'react-viro';
 import { API_KEY } from '../../env.js';
 
 class ARView extends Component {
@@ -7,7 +11,7 @@ class ARView extends Component {
     return (
       <ViroARSceneNavigator
         apiKey={API_KEY}
-        initialScene={{ scene: this.renderScene() }}
+        initialScene={{ scene: this.renderScene }}
       />
     );
   }

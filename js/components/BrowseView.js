@@ -10,7 +10,7 @@ class BrowseView extends Component {
     this.getNextPageProducts = this.getNextPageProducts.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.getNextPageProducts();
   }
 
