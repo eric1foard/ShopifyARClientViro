@@ -30,9 +30,9 @@ const routes = {
 };
 
 const icons = {
-  [BROWSE]: 'close-circle', //'albums',
-  [SEARCH]: 'close-circle',//'search',
-  [STORE]: 'close-circle'//'basket'
+  [BROWSE]: 'albums',
+  [SEARCH]: 'search',
+  [STORE]: 'basket'
   // TODO: icon for link to store
 };
 
