@@ -1,12 +1,24 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   ViroARSceneNavigator,
   ViroARScene,
-  ViroText
+  ViroImage
 } from 'react-viro';
 import { API_KEY } from '../../env.js';
 
+// TODO: this will not be needed when store dimensions in meters
+const formatDimension = dim => {
+  const INCH_TO_METER = 0.0254; // inches => meters
+  return dim * INCH_TO_METER;
+};
+
 class ARView extends Component {
+  constructor(props) {
+    super(props);
+    this.renderScene = this.renderScene.bind(this);
+  }
+
   render() {
     return (
       <ViroARSceneNavigator
@@ -17,12 +29,22 @@ class ARView extends Component {
   }
 
   renderScene() {
+    const { height, width, image } = this.props.product;
     return (
       <ViroARScene>
-        <ViroText text={'testing!'} scale={[.5, .5, .5]} position={[0, 0, -1]} />
+        <ViroImage
+          source={{ uri: image }}
+          height={formatDimension(height)}
+          width={formatDimension(width)}
+          // position={[0,0,-1]}
+        />
       </ViroARScene>
     );
   }
 }
 
-export default ARView;
+const mapStateToProps = ({ selectedProduct }) => ({
+  product: selectedProduct
+});
+
+export default connect(mapStateToProps)(ARView);

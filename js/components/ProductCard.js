@@ -9,7 +9,7 @@ class ProductCard extends PureComponent {
   }
 
   render() {
-    const { title, image } = this.props;
+    const { title, image } = this.props.product;
     return (
       <TouchableOpacity onPress={this.handlePress}>
         <Card
@@ -25,7 +25,9 @@ class ProductCard extends PureComponent {
   }
 
   handlePress() {
-    this.props.navigation.navigate('ARView');
+    const { navigation: { navigate }, product, handleProductSelect } = this.props;
+    handleProductSelect(product);
+    navigate('ARView');
   }
 }
 

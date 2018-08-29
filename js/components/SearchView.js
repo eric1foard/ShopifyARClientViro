@@ -7,7 +7,8 @@ import {
   getProducts,
   showListLoading,
   handleClearText,
-  updateSearchText
+  updateSearchText,
+  handleProductSelect
 } from '../actions';
 
 
@@ -29,13 +30,15 @@ class SearchView extends Component {
   }
 
   render() {
+    const { search, navigation, showListLoading, handleProductSelect } = this.props;
     return (
       <ProductGrid
-        {...this.props.search}
-        navigation={this.props.navigation}
+        {...search}
+        navigation={navigation}
         listHeader={this.renderSearchInput()}
         getNextPageProducts={this.getNextPageProducts}
-        showListLoading={this.props.showListLoading}
+        showListLoading={showListLoading}
+        handleProductSelect={handleProductSelect}
       />
     );
   }
@@ -71,7 +74,8 @@ const mapDispatchToProps = dispatch => {
     getProducts,
     showListLoading,
     handleClearText,
-    updateSearchText
+    updateSearchText,
+    handleProductSelect
   };
   return bindActionCreators(actions, dispatch);
 };

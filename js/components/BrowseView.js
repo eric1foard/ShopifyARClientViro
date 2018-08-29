@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ProductGrid from './ProductGrid';
-import { getProducts, showListLoading } from '../actions';
+import { getProducts, showListLoading, handleProductSelect } from '../actions';
 
 class BrowseView extends Component {
   constructor(props) {
@@ -15,7 +15,7 @@ class BrowseView extends Component {
   }
 
   render() {
-    const { browse, navigation, showListLoading } = this.props;
+    const { browse, navigation, showListLoading, handleProductSelect } = this.props;
     return (
       <ProductGrid
         {...browse}
@@ -23,6 +23,7 @@ class BrowseView extends Component {
         listHeader={null}
         getNextPageProducts={this.getNextPageProducts}
         showListLoading={showListLoading}
+        handleProductSelect={handleProductSelect}
       />
     );
   }
@@ -43,7 +44,7 @@ const mapStateToProps = ({ browse, shop }) =>
   });
 
 const mapDispatchToProps = dispatch => {
-  const actions = { getProducts, showListLoading };
+  const actions = { getProducts, showListLoading, handleProductSelect };
   return bindActionCreators(actions, dispatch);
 };
 

@@ -42,3 +42,8 @@ export const updateSearchText = text => ({
   type: types.UPDATE_SEARCH_TEXT,
   payload: text
 });
+
+export const handleProductSelect = payload => ({
+  type: types.SELECT_PRODUCT,
+  payload
+});

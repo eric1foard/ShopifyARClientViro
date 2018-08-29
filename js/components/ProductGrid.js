@@ -16,13 +16,16 @@ class ProdutGrid extends Component {
     this.renderItem = this.renderItem.bind(this);
   }
 
-  renderItem = ({ title, image }) => (
-    <ProductCard
-      navigation={this.props.navigation}
-      title={title}
-      image={image}
-    />
-  );
+  renderItem = (product) => {
+    const { navigation, handleProductSelect } = this.props;
+    return (
+      <ProductCard
+        navigation={navigation}
+        handleProductSelect={handleProductSelect}
+        product={product}
+      />
+    );
+  };
 
   renderFooter() {
     if (!this.props.loading) return null;
@@ -47,7 +50,7 @@ class ProdutGrid extends Component {
         onEndThreshold={0.5}
         initialNumToRender={pageSize}
         ListFooterComponent={this.renderFooter()}
-        // ListEmptyComponent TODO: what to show if list is empty?
+      // ListEmptyComponent TODO: what to show if list is empty?
 
       // extraData TODO: what to do with this, if anything?
       />
