@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Button, View } from 'react-native';
 import {
   ViroARSceneNavigator,
   ViroARScene,
+  ViroARPlaneSelector,
   ViroImage
 } from 'react-viro';
 import { API_KEY } from '../../env.js';
-import { showProduct } from '../actions';
+
+const MIN_PLANE_DIMENSION = 0.05;
 
 // TODO: this will not be needed when store dimensions in meters
 const formatDimension = dim => {
@@ -38,26 +38,26 @@ class ARView extends Component {
   }
 
   renderScene() {
-    const {
-      product: { height, width, image, visible },
-      showProduct,
-    } = this.props;
+    const { height, width, image } = this.props.product;
     const widthFormatted = formatDimension(width);
     const heightFormatted = formatDimension(height);
     return (
       <ViroARScene
-      // displayPointCloud={pointCloudOpts}
-      // anchorDetectionTypes={'PlanesVertical'}
-      onClick={() => {console.log('click!!!!'); this.props.showProduct()}}
-      >
-        {visible &&
-        <ViroImage
-          source={{ uri: image }}
-          height={heightFormatted}
-          width={widthFormatted}
-          // rotation={[180, 0, 0]}
-        // position={[0,0,-1]}
-        />}
+        displayPointCloud={pointCloudOpts}
+        anchorDetectionTypes={'PlanesHorizontal'}>
+        <ViroARPlaneSelector
+        // minHeight={heightFormatted}
+        // minWidth={widthFormatted}
+        alignment={'Horizontal'}
+        onPlaneSelected={() => console.warn('plane selected!!!!')}>
+          <ViroImage
+            source={{ uri: image }}
+            height={heightFormatted}
+            width={widthFormatted}
+            rotation={[270,0,0]}
+          // position={[0,0,-1]}
+          />
+        </ViroARPlaneSelector>
       </ViroARScene>
     );
   }
@@ -67,8 +67,4 @@ const mapStateToProps = ({ selectedProduct }) => ({
   product: selectedProduct
 });
 
-const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ showProduct }, dispatch);
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ARView);
+export default connect(mapStateToProps)(ARView);
