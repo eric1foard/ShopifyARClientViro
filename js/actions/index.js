@@ -47,3 +47,7 @@ export const handleProductSelect = payload => ({
   type: types.SELECT_PRODUCT,
   payload
 });
+
+export const showProduct = () => ({
+  type: types.SHOW_PRODUCT
+});
