@@ -12,7 +12,7 @@ import {
 import { API_KEY } from '../../env.js';
 import { handleFoundAnchor } from '../actions';
 
-const MIN_PLANE_DIMENSION = 0.05;
+const MIN_PLANE_DIMENSION = 0.1;
 
 // TODO: this will not be needed when store dimensions in meters
 const formatDimension = dim => {
@@ -56,8 +56,8 @@ class ARView extends Component {
 
   renderHorizPlaneSelector(product) {
     return <ViroARPlane
-      minHeight={0.1}
-      minWidth={0.1}
+      minHeight={MIN_PLANE_DIMENSION}
+      minWidth={MIN_PLANE_DIMENSION}
       alignment={'Horizontal'}
       onAnchorFound={anchor => this.props.handleFoundAnchor(anchor)}>
       {product.visible && this.renderDraggableNode(product)}
@@ -66,6 +66,7 @@ class ARView extends Component {
 
   renderDraggableNode(product) {
     const { height, width, image, anchorPos } = product;
+    console.warn('anchorPos ',anchorPos);
     const widthFormatted = formatDimension(width);
     const heightFormatted = formatDimension(height);
     return (
@@ -78,17 +79,18 @@ class ARView extends Component {
           /> */
       <ViroNode
         dragType="FixedToPlane"
-        onDrag={()=>{}}
+        onDrag={(pos)=> console.warn('pos ', pos)}
         dragPlane={{
           planePoint: anchorPos,
           planeNormal: [0,1,0],
-          maxDistance: 10
+          maxDistance: 5
         }}
       >
         <ViroQuad
           rotation={[270, 0, 0]}
-          height={1}
+          height={.1}
           width={1}
+          // position={[0,0,0]}
         />
       </ViroNode>
     )
