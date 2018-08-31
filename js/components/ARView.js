@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
   ViroARSceneNavigator,
   ViroARScene,
-  ViroARPlaneSelector,
-  ViroImage
+  ViroARPlane,
+  ViroImage,
+  ViroNode,
+  ViroQuad,
 } from 'react-viro';
 import { API_KEY } from '../../env.js';
+import { handleFoundAnchor } from '../actions';
 
 const MIN_PLANE_DIMENSION = 0.05;
 
@@ -22,6 +26,7 @@ const pointCloudOpts = {
   maxPoints: 100
 };
 
+// TODO: implement onTrackingInitialized for when AR is warming up
 class ARView extends Component {
   constructor(props) {
     super(props);
@@ -38,28 +43,55 @@ class ARView extends Component {
   }
 
   renderScene() {
-    const { height, width, image } = this.props.product;
-    const widthFormatted = formatDimension(width);
-    const heightFormatted = formatDimension(height);
+    const { product } = this.props;
     return (
       <ViroARScene
         displayPointCloud={pointCloudOpts}
-        anchorDetectionTypes={'PlanesHorizontal'}>
-        <ViroARPlaneSelector
-        // minHeight={heightFormatted}
-        // minWidth={widthFormatted}
-        alignment={'Horizontal'}
-        onPlaneSelected={() => console.warn('plane selected!!!!')}>
-          <ViroImage
+        anchorDetectionTypes={'PlanesHorizontal'}
+      >
+        {this.renderHorizPlaneSelector(product)}
+      </ViroARScene>
+    );
+  }
+
+  renderHorizPlaneSelector(product) {
+    return <ViroARPlane
+      minHeight={0.1}
+      minWidth={0.1}
+      alignment={'Horizontal'}
+      onAnchorFound={anchor => this.props.handleFoundAnchor(anchor)}>
+      {product.visible && this.renderDraggableNode(product)}
+    </ViroARPlane>
+  }
+
+  renderDraggableNode(product) {
+    const { height, width, image, anchorPos } = product;
+    const widthFormatted = formatDimension(width);
+    const heightFormatted = formatDimension(height);
+    return (
+      /* <ViroImage
             source={{ uri: image }}
             height={heightFormatted}
             width={widthFormatted}
-            rotation={[270,0,0]}
-          // position={[0,0,-1]}
-          />
-        </ViroARPlaneSelector>
-      </ViroARScene>
-    );
+            // rotation={[270,0,0]}
+            position={[0,1.5,-1]}
+          /> */
+      <ViroNode
+        dragType="FixedToPlane"
+        onDrag={()=>{}}
+        dragPlane={{
+          planePoint: anchorPos,
+          planeNormal: [0,1,0],
+          maxDistance: 10
+        }}
+      >
+        <ViroQuad
+          rotation={[270, 0, 0]}
+          height={1}
+          width={1}
+        />
+      </ViroNode>
+    )
   }
 }
 
@@ -67,4 +99,9 @@ const mapStateToProps = ({ selectedProduct }) => ({
   product: selectedProduct
 });
 
-export default connect(mapStateToProps)(ARView);
+const mapDispatchToProps = dispatch => {
+  const actions = { handleFoundAnchor };
+  return bindActionCreators(actions, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ARView);

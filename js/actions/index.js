@@ -51,3 +51,8 @@ export const handleProductSelect = payload => ({
 export const showProduct = () => ({
   type: types.SHOW_PRODUCT
 });
+
+export const handleFoundAnchor = payload => ({
+  type: types.ANCHOR_FOUND,
+  payload
+})
