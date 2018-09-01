@@ -55,4 +55,9 @@ export const showProduct = () => ({
 export const handleFoundAnchor = payload => ({
   type: types.ANCHOR_FOUND,
   payload
-})
+});
+
+export const handleDrag = payload => ({
+  type: types.DRAG,
+  payload
+});

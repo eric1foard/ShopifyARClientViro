@@ -10,7 +10,7 @@ import {
   ViroQuad,
 } from 'react-viro';
 import { API_KEY } from '../../env.js';
-import { handleFoundAnchor } from '../actions';
+import { handleFoundAnchor, handleDrag } from '../actions';
 
 const MIN_PLANE_DIMENSION = 0.1;
 
@@ -48,10 +48,15 @@ class ARView extends Component {
       <ViroARScene
         displayPointCloud={pointCloudOpts}
         anchorDetectionTypes={'PlanesHorizontal'}
+        onCameraTransformUpdate={this.handleCameraTransformUpdate}
       >
         {this.renderHorizPlaneSelector(product)}
       </ViroARScene>
     );
+  }
+
+  handleCameraTransformUpdate(transform) {
+
   }
 
   renderHorizPlaneSelector(product) {
@@ -65,34 +70,21 @@ class ARView extends Component {
   }
 
   renderDraggableNode(product) {
-    const { height, width, image, anchorPos } = product;
-    console.warn('anchorPos ',anchorPos);
+    const { height, width, image, position, rotation } = product;
     const widthFormatted = formatDimension(width);
     const heightFormatted = formatDimension(height);
     return (
-      /* <ViroImage
+      <ViroNode
+        // onDrag={this.props.handleDrag}
+        transformBehaviors="billboard"
+        rotation={rotation}
+        position={position}
+      >
+        <ViroImage
             source={{ uri: image }}
             height={heightFormatted}
             width={widthFormatted}
-            // rotation={[270,0,0]}
-            position={[0,1.5,-1]}
-          /> */
-      <ViroNode
-        dragType="FixedToPlane"
-        onDrag={(pos)=> console.warn('pos ', pos)}
-        dragPlane={{
-          planePoint: anchorPos,
-          planeNormal: [0,1,0],
-          maxDistance: 5
-        }}
-        transformBehaviors="billboard"
-      >
-        <ViroQuad
-          rotation={[270, 0, 0]}
-          height={.1}
-          width={1}
-          // position={[0,0,0]}
-        />
+          />
       </ViroNode>
     )
   }
@@ -103,7 +95,7 @@ const mapStateToProps = ({ selectedProduct }) => ({
 });
 
 const mapDispatchToProps = dispatch => {
-  const actions = { handleFoundAnchor };
+  const actions = { handleFoundAnchor, handleDrag };
   return bindActionCreators(actions, dispatch);
 }
 
