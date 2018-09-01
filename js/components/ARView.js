@@ -85,6 +85,7 @@ class ARView extends Component {
           planeNormal: [0,1,0],
           maxDistance: 5
         }}
+        transformBehaviors="billboard"
       >
         <ViroQuad
           rotation={[270, 0, 0]}
