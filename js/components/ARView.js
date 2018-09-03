@@ -14,6 +14,7 @@ const MIN_PLANE_DIMENSION = 0.05;
 const ROTATION_START = 1, ROTATION_END = 3;
 let currRotation = null;
 let wallDist = 0;
+let placementTimeout = null;
 
 // TODO: this will not be needed when store dimensions in meters
 const formatDimension = dim => {
@@ -40,6 +41,7 @@ class ARView extends Component {
     this.renderScene = this.renderScene.bind(this);
     this.handleAnchorFound = this.handleAnchorFound.bind(this);
     this.handleRotate = this.handleRotate.bind(this);
+    this.handleDrag = this.handleDrag.bind(this);
   }
 
   render() {
@@ -52,7 +54,7 @@ class ARView extends Component {
   }
 
   renderScene() {
-    setTimeout(() => { this.setState({ showImage: true }) }, 15000)
+    // setTimeout(() => { this.setState({ showImage: true }) }, 15000)
     const { height, width, image } = this.props.product;
     const widthFormatted = formatDimension(width);
     const heightFormatted = formatDimension(height);
@@ -69,28 +71,38 @@ class ARView extends Component {
           onAnchorFound={this.handleAnchorFound}>
           <ViroNode
             ref={c => this.state.viroNode = c}
-            onDrag={(pos) => { wallDist = pos[2] }}
+            onDrag={this.handleDrag}
             dragType='FixedToPlane'
             dragPlane={{
               planePoint: this.state.anchorPt,
               planeNormal: [0, 1, 0],
               maxDistance: 5
             }}>
-            {!this.state.showImage && <ViroBox
+            <ViroBox
               height={0.01}
               length={0.01}
               width={5}
-            />}
-            {this.state.showImage && <ViroImage
+              visible={!this.state.showImage}
+            />
+            <ViroImage
               source={{ uri: image }}
               height={heightFormatted}
               width={widthFormatted}
               position={[0, 1.5, 0]}
-            />}
+              visible={this.state.showImage}
+            />
           </ViroNode>
         </ViroARPlane>
       </ViroARScene>
     );
+  }
+
+  handleDrag(pos) {
+    wallDist = pos[2];
+    if (placementTimeout) {
+      clearTimeout(placementTimeout);
+    }
+    placementTimeout = setTimeout(() => { this.setState({ showImage: true }) }, 250);
   }
 
   handleRotate(rotateState, rotationFactor) {
@@ -98,10 +110,8 @@ class ARView extends Component {
       case ROTATION_START:
         break;
       case ROTATION_END:
-        // currRotation = null;
         break;
       default: // otherwise, rotation in progress
-        // currRotation[1] -= rotationFactor;
         this.state.viroNode.setNativeProps({
           rotation: [currRotation[0], currRotation[1] + rotationFactor, currRotation[2]]
         });
