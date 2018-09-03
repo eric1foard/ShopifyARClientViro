@@ -52,7 +52,7 @@ class ARView extends Component {
   }
 
   renderScene() {
-    setTimeout(() => { this.setState({ showImage: true }) }, 10000)
+    setTimeout(() => { this.setState({ showImage: true }) }, 15000)
     const { height, width, image } = this.props.product;
     const widthFormatted = formatDimension(width);
     const heightFormatted = formatDimension(height);
