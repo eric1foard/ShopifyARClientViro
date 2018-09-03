@@ -5,13 +5,15 @@ import {
   ViroARScene,
   ViroARPlane,
   ViroImage,
-  ViroBox
+  ViroBox,
+  ViroNode
 } from 'react-viro';
 import { API_KEY } from '../../env.js';
 
 const MIN_PLANE_DIMENSION = 0.05;
 const ROTATION_START = 1, ROTATION_END = 3;
 let currRotation = null;
+let wallDist = 0;
 
 // TODO: this will not be needed when store dimensions in meters
 const formatDimension = dim => {
@@ -29,9 +31,10 @@ class ARView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      anchorPt: [0,0,0],
+      anchorPt: [0, 0, 0],
       showPointClound: true,
-      viroBox: null
+      viroNode: null,
+      showImage: false
     }
 
     this.renderScene = this.renderScene.bind(this);
@@ -49,6 +52,7 @@ class ARView extends Component {
   }
 
   renderScene() {
+    setTimeout(() => { this.setState({ showImage: true }) }, 10000)
     const { height, width, image } = this.props.product;
     const widthFormatted = formatDimension(width);
     const heightFormatted = formatDimension(height);
@@ -57,25 +61,33 @@ class ARView extends Component {
         displayPointCloud={this.state.showPointClound && pointCloudOpts}
         anchorDetectionTypes={'PlanesHorizontal'}
         onRotate={this.handleRotate}
-        >
+      >
         <ViroARPlane
-        minHeight={MIN_PLANE_DIMENSION}
-        minWidth={MIN_PLANE_DIMENSION}
-        alignment={'Horizontal'}
-        onAnchorFound={this.handleAnchorFound}>
-        <ViroBox
-        ref={c => this.state.viroBox = c}
-        height={0.01}
-        length={0.01}
-        width={10}
-        onDrag={() => {}}
-        dragType='FixedToPlane'
-        dragPlane={{
-          planePoint: this.state.anchorPt,
-          planeNormal: [0,1,0],
-          maxDistance: 5
-        }}
-        />
+          minHeight={MIN_PLANE_DIMENSION}
+          minWidth={MIN_PLANE_DIMENSION}
+          alignment={'Horizontal'}
+          onAnchorFound={this.handleAnchorFound}>
+          <ViroNode
+            ref={c => this.state.viroNode = c}
+            onDrag={(pos) => { wallDist = pos[2] }}
+            dragType='FixedToPlane'
+            dragPlane={{
+              planePoint: this.state.anchorPt,
+              planeNormal: [0, 1, 0],
+              maxDistance: 5
+            }}>
+            {!this.state.showImage && <ViroBox
+              height={0.01}
+              length={0.01}
+              width={5}
+            />}
+            {this.state.showImage && <ViroImage
+              source={{ uri: image }}
+              height={heightFormatted}
+              width={widthFormatted}
+              position={[0, 1.5, 0]}
+            />}
+          </ViroNode>
         </ViroARPlane>
       </ViroARScene>
     );
@@ -90,8 +102,8 @@ class ARView extends Component {
         break;
       default: // otherwise, rotation in progress
         // currRotation[1] -= rotationFactor;
-        this.state.viroBox.setNativeProps({
-          rotation: [currRotation[0], currRotation[1]+rotationFactor, currRotation[2]]
+        this.state.viroNode.setNativeProps({
+          rotation: [currRotation[0], currRotation[1] + rotationFactor, currRotation[2]]
         });
         break;
     }
@@ -103,7 +115,8 @@ class ARView extends Component {
       showPointClound: false
     });
     let y = rotation[1];
-    currRotation = [0,y,0];
+    currRotation = [0, y, 0];
+    wallDist = position[2];
   }
 }
 
@@ -112,6 +125,3 @@ const mapStateToProps = ({ selectedProduct }) => ({
 });
 
 export default connect(mapStateToProps)(ARView);
-
-
-// eventually will bring the image back in...
