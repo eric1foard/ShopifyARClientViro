@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { View, Dimensions, PixelRatio } from 'react-native';
 import { connect } from 'react-redux';
 import {
   ViroARSceneNavigator,
@@ -12,9 +13,13 @@ import { API_KEY } from '../../env.js';
 
 const MIN_PLANE_DIMENSION = 0.05;
 const ROTATION_START = 1, ROTATION_END = 3;
-let currRotation = 0;
+let initialRotation = 0;
 let wallDist = 0;
 let placementTimeout = null;
+
+const getWindowDimension = dim => (Dimensions.get('window')[dim] * PixelRatio.get()) / 2;
+const WINDOW_HEIGHT_CENTER = getWindowDimension('height');
+const WINDOW_WIDTH_CENTER = getWindowDimension('width');
 
 // TODO: this will not be needed when store dimensions in meters
 const formatDimension = dim => {
@@ -28,6 +33,14 @@ const pointCloudOpts = {
   maxPoints: 100
 };
 
+const getPlanePosition = hitTestResults => {
+  if (!(hitTestResults && hitTestResults.length)) {
+    return null;
+  }
+  const result = hitTestResults.find(htr => htr.type === 'ExistingPlaneUsingExtent'); 
+  return result && result.transform && result.transform.position;
+};
+
 class ARView extends Component {
   constructor(props) {
     super(props);
@@ -35,6 +48,7 @@ class ARView extends Component {
       anchorPt: [0, 0, 0],
       showPointClound: true,
       viroNode: null,
+      ARScene: null,
       showImage: false
     }
 
@@ -46,10 +60,12 @@ class ARView extends Component {
 
   render() {
     return (
+      // <View>
       <ViroARSceneNavigator
         apiKey={API_KEY}
         initialScene={{ scene: this.renderScene }}
       />
+      // </View>
     );
   }
 
@@ -60,9 +76,10 @@ class ARView extends Component {
     const heightFormatted = formatDimension(height);
     return (
       <ViroARScene
+        ref={c => this.ARScene = c}
         displayPointCloud={this.state.showPointClound && pointCloudOpts}
         anchorDetectionTypes={'PlanesHorizontal'}
-        handleCameraTransform={this.handleCameraTransform}
+        onCameraTransformUpdate={this.handleCameraTransform}
       >
         <ViroARPlane
           minHeight={MIN_PLANE_DIMENSION}
@@ -71,7 +88,7 @@ class ARView extends Component {
           onAnchorFound={this.handleAnchorFound}>
           <ViroNode
             ref={c => this.state.viroNode = c}
-            onDrag={this.handleDrag}
+            onDrag={() => {}}
             dragType='FixedToPlane'
             dragPlane={{
               planePoint: this.state.anchorPt,
@@ -98,14 +115,18 @@ class ARView extends Component {
   }
 
   handleCameraTransform({ cameraTransform: { rotation } }) {
-    console.warn('calling handleCameraTransform');
-    const rot = currRotation + rotation[2];
-    currRotation = rot;
-    // const dist = wallDist + (rotation[0] > lastX ? 0.1 : (rotation[0] < lastX ? -0.1 : 0))
-    this.state.viroNode.setNativeProps({
-      // position: [0, 0, dist],
-      rotation: [0, rot, 0]
-    });
+    this.ARScene.performARHitTestWithPoint(WINDOW_WIDTH_CENTER, WINDOW_HEIGHT_CENTER)
+    .then(results => {
+      const position = getPlanePosition(results);
+      // console.warn('position ',  position);
+      const nativeProps = {
+        rotation: [rotation[0], rotation[1], 0], // gimbal lock
+      };
+      if (position) {
+        nativeProps.position = position;
+      }
+      this.state.viroNode.setNativeProps(nativeProps);  
+    })
   }
 
   handleDrag(pos) {
@@ -122,7 +143,7 @@ class ARView extends Component {
       showPointClound: false
     });
     let y = rotation[1];
-    currRotation = y;
+    initialRotation = y;
     wallDist = position[2];
   }
 }
