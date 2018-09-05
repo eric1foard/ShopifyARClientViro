@@ -12,7 +12,7 @@ import { API_KEY } from '../../env.js';
 
 const MIN_PLANE_DIMENSION = 0.05;
 const ROTATION_START = 1, ROTATION_END = 3;
-let currRotation = null;
+let currRotation = 0;
 let wallDist = 0;
 let placementTimeout = null;
 
@@ -40,8 +40,8 @@ class ARView extends Component {
 
     this.renderScene = this.renderScene.bind(this);
     this.handleAnchorFound = this.handleAnchorFound.bind(this);
-    this.handleRotate = this.handleRotate.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
+    this.handleCameraTransform = this.handleCameraTransform.bind(this);
   }
 
   render() {
@@ -62,7 +62,7 @@ class ARView extends Component {
       <ViroARScene
         displayPointCloud={this.state.showPointClound && pointCloudOpts}
         anchorDetectionTypes={'PlanesHorizontal'}
-        onRotate={this.handleRotate}
+        handleCameraTransform={this.handleCameraTransform}
       >
         <ViroARPlane
           minHeight={MIN_PLANE_DIMENSION}
@@ -99,9 +99,9 @@ class ARView extends Component {
 
   handleCameraTransform({ cameraTransform: { rotation } }) {
     const rot = currRotation + rotation[2];
-    const dist = wallDist + (rotation[0] > lastX ? 0.1 : (rotation[0] < lastX ? -0.1 : 0))
+    // const dist = wallDist + (rotation[0] > lastX ? 0.1 : (rotation[0] < lastX ? -0.1 : 0))
     this.state.viroNode.setNativeProps({
-      position: [0, 0, dist],
+      // position: [0, 0, dist],
       rotation: [0, rot, 0]
     });
   }
@@ -114,27 +114,13 @@ class ARView extends Component {
     placementTimeout = setTimeout(() => { this.setState({ showImage: true }) }, 250);
   }
 
-  handleRotate(rotateState, rotationFactor) {
-    switch (rotateState) {
-      case ROTATION_START:
-        break;
-      case ROTATION_END:
-        break;
-      default: // otherwise, rotation in progress
-        this.state.viroNode.setNativeProps({
-          rotation: [currRotation[0], currRotation[1] + rotationFactor, currRotation[2]]
-        });
-        break;
-    }
-  }
-
   handleAnchorFound({ position, rotation }) {
     this.setState({
       anchorPt: position,
       showPointClound: false
     });
     let y = rotation[1];
-    currRotation = [0, y, 0];
+    currRotation = y;
     wallDist = position[2];
   }
 }
