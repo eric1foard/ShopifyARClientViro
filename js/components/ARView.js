@@ -98,7 +98,9 @@ class ARView extends Component {
   }
 
   handleCameraTransform({ cameraTransform: { rotation } }) {
+    console.warn('calling handleCameraTransform');
     const rot = currRotation + rotation[2];
+    currRotation = rot;
     // const dist = wallDist + (rotation[0] > lastX ? 0.1 : (rotation[0] < lastX ? -0.1 : 0))
     this.state.viroNode.setNativeProps({
       // position: [0, 0, dist],
