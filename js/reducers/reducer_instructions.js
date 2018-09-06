@@ -1,4 +1,4 @@
-import { NEXT_INSTRUCTION } from '../actions/types';
+import { SELECT_PRODUCT, NEXT_INSTRUCTION } from '../actions/types';
 
 const NUM_STEPS = 4;
 const STEP_TEXT = [
@@ -21,15 +21,17 @@ const initState = {
 
 export default function reducer(state = initState, action) {
   switch (action.type) {
-      case NEXT_INSTRUCTION:
-          const nextStep = state.step < NUM_STEPS ? state.step + 1 : NUM_STEPS;
-          return {
-            ...state,
-            step: nextStep,
-            buttonTitle: nextStep < NUM_STEPS ? 'Next' : 'Dismiss',
-            stepText: STEP_TEXT[nextStep] || '',
-            dismissed: state.step >= NUM_STEPS ? true : false
-          };
+    case SELECT_PRODUCT:
+      return initState;
+    case NEXT_INSTRUCTION:
+      const nextStep = state.step < NUM_STEPS ? state.step + 1 : NUM_STEPS;
+      return {
+        ...state,
+        step: nextStep,
+        buttonTitle: nextStep < NUM_STEPS ? 'Next' : 'Dismiss',
+        stepText: STEP_TEXT[nextStep] || '',
+        dismissed: state.step >= NUM_STEPS ? true : false
+      };
   }
   return state;
 }
