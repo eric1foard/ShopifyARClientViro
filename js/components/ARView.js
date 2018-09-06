@@ -1,5 +1,7 @@
+import { API_KEY } from '../../env.js';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { View, StyleSheet } from 'react-native';
 import {
   ViroARSceneNavigator,
   ViroARScene,
@@ -8,12 +10,11 @@ import {
   ViroBox,
   ViroNode
 } from 'react-viro';
-import { API_KEY } from '../../env.js';
+import InstructionCard from './InstructionCard';
 
 const MIN_PLANE_DIMENSION = 0.05;
 const ROTATION_START = 1, ROTATION_END = 3;
 let currRotation = null;
-let wallDist = 0;
 let placementTimeout = null;
 
 // TODO: this will not be needed when store dimensions in meters
@@ -28,7 +29,15 @@ const pointCloudOpts = {
   maxPoints: 100
 };
 
+// using component state for this component rather than redux state
+// because I encountered an odd bug with react-viro where the node
+// jumps about 1 meter into the air. Also, the state for this component
+// should not be needed externally, so should be fine
 class ARView extends Component {
+  static navigationOptions = {
+    headerTransparent: true
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -46,10 +55,17 @@ class ARView extends Component {
 
   render() {
     return (
-      <ViroARSceneNavigator
-        apiKey={API_KEY}
-        initialScene={{ scene: this.renderScene }}
-      />
+      <View style={localStyles.outer}>
+        <ViroARSceneNavigator
+          style={localStyles.arView}
+          apiKey={API_KEY}
+          initialScene={{ scene: this.renderScene }}
+        />
+        {<InstructionCard />}
+        {/* <View style={localStyles.InstructionCard}>
+          <Text>wow!</Text>
+        </View> */}
+      </View>
     );
   }
 
@@ -98,7 +114,6 @@ class ARView extends Component {
   }
 
   handleDrag(pos) {
-    wallDist = pos[2];
     if (placementTimeout) {
       clearTimeout(placementTimeout);
     }
@@ -126,9 +141,17 @@ class ARView extends Component {
     });
     let y = rotation[1];
     currRotation = [0, y, 0];
-    wallDist = position[2];
   }
 }
+
+var localStyles = StyleSheet.create({
+  outer: {
+    flex: 1
+  },
+  arView: {
+    flex: 1
+  }
+});
 
 const mapStateToProps = ({ selectedProduct }) => ({
   product: selectedProduct

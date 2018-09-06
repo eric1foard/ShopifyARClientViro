@@ -52,7 +52,8 @@ const navigationOptions = ({ navigation }) => ({
         // color={tintColor}
       />
     );
-  }
+  },
+  tabBarVisible: navigation.state.index > 0 ? false : true,
 });
 
 const config = {
