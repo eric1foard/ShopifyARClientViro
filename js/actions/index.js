@@ -52,3 +52,8 @@ export const nextInstruction = payload => ({
   type: types.NEXT_INSTRUCTION,
   payload
 });
+
+export const foundAnchor = payload => ({
+  type: types.ANCHOR_FOUND,
+  payload
+});

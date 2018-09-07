@@ -1,4 +1,4 @@
-import { NEXT_INSTRUCTION } from '../actions/types';
+import { NEXT_INSTRUCTION, ANCHOR_FOUND } from '../actions/types';
 import { STEPS_ENUM } from '../util/constants';
 
 const initState = {
@@ -14,6 +14,11 @@ export default function reducer(state = initState, action) {
             showPointClound: action.payload === STEPS_ENUM.DETECT_FLOOR,
             showARScene: action.payload === STEPS_ENUM.DETECT_FLOOR,
           };
+      case ANCHOR_FOUND:
+          return {
+            ...state,
+            showPointClound: false // hide point cloud when anchor found
+          }
   }
   return state;
 }

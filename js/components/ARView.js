@@ -1,5 +1,6 @@
 import { API_KEY } from '../../env.js';
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { View, StyleSheet } from 'react-native';
 import {
@@ -11,10 +12,11 @@ import {
   ViroNode
 } from 'react-viro';
 import InstructionCard from './InstructionCard';
+import { foundAnchor } from '../actions';
 
 const MIN_PLANE_DIMENSION = 0.05;
 const ROTATION_START = 1, ROTATION_END = 3;
-let currRotation = null;
+let initialRotation = 0;
 let placementTimeout = null;
 
 // TODO: this will not be needed when store dimensions in meters
@@ -44,7 +46,8 @@ class ARView extends Component {
       anchorPt: [0, 0, 0],
       viroNode: null,
       ViroARSceneNavigator: null,
-      showImage: false
+      showImage: false,
+      showPointClound: true
     }
 
     this.renderScene = this.renderScene.bind(this);
@@ -141,19 +144,17 @@ class ARView extends Component {
         break;
       default: // otherwise, rotation in progress
         this.state.viroNode.setNativeProps({
-          rotation: [currRotation[0], currRotation[1] + rotationFactor, currRotation[2]]
+          rotation: [0, initialRotation + rotationFactor, 0]
         });
         break;
     }
   }
 
   handleAnchorFound({ position, rotation }) {
-    this.setState({
+    initialRotation = rotation[1];
+    this.props.foundAnchor({
       anchorPt: position,
-      showPointClound: false
     });
-    let y = rotation[1];
-    currRotation = [0, y, 0];
   }
 }
 
@@ -171,4 +172,9 @@ const mapStateToProps = ({ selectedProduct, ARMeta }) => ({
   meta: ARMeta
 });
 
-export default connect(mapStateToProps)(ARView);
+const mapDispatchToProps = dispatch => {
+  const actions = { foundAnchor };
+  return bindActionCreators(actions, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ARView);
