@@ -43,11 +43,9 @@ class ARView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      anchorPt: [0, 0, 0],
       viroNode: null,
       ViroARSceneNavigator: null,
-      showImage: false,
-      showPointClound: true
+      showImage: false
     }
 
     this.renderScene = this.renderScene.bind(this);
@@ -85,7 +83,7 @@ class ARView extends Component {
   renderScene() {
     const {
       product: { height, width, image },
-      meta: { showPointClound }
+      meta: { showPointClound, anchorPt }
     } = this.props;
 
     const widthFormatted = formatDimension(width);
@@ -106,7 +104,7 @@ class ARView extends Component {
             onDrag={this.handleDrag}
             dragType='FixedToPlane'
             dragPlane={{
-              planePoint: this.state.anchorPt,
+              planePoint: anchorPt,
               planeNormal: [0, 1, 0],
               maxDistance: 5
             }}>
@@ -153,7 +151,7 @@ class ARView extends Component {
   handleAnchorFound({ position, rotation }) {
     initialRotation = rotation[1];
     this.props.foundAnchor({
-      anchorPt: position,
+      anchorPt: position, // TODO: will this work, or needs to come from state?
     });
   }
 }

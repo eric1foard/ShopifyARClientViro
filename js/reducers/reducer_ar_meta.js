@@ -3,7 +3,8 @@ import { STEPS_ENUM } from '../util/constants';
 
 const initState = {
   showARScene: false,
-  showPointClound: false
+  showPointClound: false,
+  anchorPt: [0,0,0]
 };
 
 export default function reducer(state = initState, action) {
@@ -17,7 +18,8 @@ export default function reducer(state = initState, action) {
       case ANCHOR_FOUND:
           return {
             ...state,
-            showPointClound: false // hide point cloud when anchor found
+            showPointClound: false,
+            anchorPt: action.payload.anchorPt
           }
   }
   return state;
