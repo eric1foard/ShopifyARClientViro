@@ -48,6 +48,7 @@ export const handleProductSelect = payload => ({
   payload
 });
 
-export const nextInstruction = () => ({
-  type: types.NEXT_INSTRUCTION
+export const nextInstruction = payload => ({
+  type: types.NEXT_INSTRUCTION,
+  payload
 });

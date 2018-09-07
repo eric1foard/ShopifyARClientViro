@@ -34,7 +34,7 @@ class InstructionCard extends PureComponent {
             backgroundColor='#03A9F4'
             buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0 }}
             title={buttonTitle}
-            onPress={this.props.nextInstruction}
+            onPress={() => this.props.nextInstruction(step < NUM_STEPS ? step + 1 : NUM_STEPS)}
             />
         </Card>
       </View>

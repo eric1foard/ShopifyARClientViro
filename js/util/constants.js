@@ -1,0 +1,7 @@
+export const STEPS_ENUM = {
+  FACE_WALL: 1,
+  DETECT_FLOOR: 2,
+  INDICATE_WALL_POS: 3,
+  DRAG_PIECE: 4
+};
+

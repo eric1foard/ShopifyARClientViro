@@ -5,6 +5,7 @@ import searchReducer from './reducer_search';
 import selectedProductReducer from './reducer_selected';
 import shopReducer from './reducer_shop';
 import instructionsReducer from './reducer_instructions';
+import ARMetaReducer from './reducer_ar_meta';
 
 export default combineReducers({
   browse: browseReducer,
@@ -12,5 +13,6 @@ export default combineReducers({
   search: searchReducer,
   selectedProduct: selectedProductReducer,
   shop: shopReducer,
-  instructions: instructionsReducer
+  instructions: instructionsReducer,
+  ARMeta: ARMetaReducer
 });

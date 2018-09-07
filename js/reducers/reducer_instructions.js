@@ -1,6 +1,7 @@
 import { SELECT_PRODUCT, NEXT_INSTRUCTION } from '../actions/types';
+import { STEPS_ENUM } from '../util/constants';
 
-const NUM_STEPS = 4;
+const NUM_STEPS = Object.keys(STEPS_ENUM).length;
 const STEP_TEXT = [
   '',
   'Face the wall you\'d like to see the piece displayed on',
@@ -12,10 +13,10 @@ const STEP_TEXT = [
 ];
 
 const initState = {
-  step: 1, // don't confuse user with 0-based index
+  step: STEPS_ENUM.FACE_WALL, // don't confuse user with 0-based index
   dismissed: false,
   buttonTitle: 'Next',
-  stepText: STEP_TEXT[1],
+  stepText: STEP_TEXT[STEPS_ENUM.FACE_WALL],
   NUM_STEPS
 };
 
@@ -24,7 +25,7 @@ export default function reducer(state = initState, action) {
     case SELECT_PRODUCT:
       return initState;
     case NEXT_INSTRUCTION:
-      const nextStep = state.step < NUM_STEPS ? state.step + 1 : NUM_STEPS;
+      const nextStep = action.payload;
       return {
         ...state,
         step: nextStep,

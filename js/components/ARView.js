@@ -24,7 +24,7 @@ const formatDimension = dim => {
 };
 
 const pointCloudOpts = {
-  imageSource: require("../res/pointCloudPoint.png"),
+  imageSource: require('../res/pointCloudPoint.png'),
   imageScale: [.02, .02, .02],
   maxPoints: 100
 };
@@ -61,22 +61,22 @@ class ARView extends Component {
           apiKey={API_KEY}
           initialScene={{ scene: this.renderScene }}
         />
-        {<InstructionCard />}
-        {/* <View style={localStyles.InstructionCard}>
-          <Text>wow!</Text>
-        </View> */}
+        <InstructionCard />
       </View>
     );
   }
 
   renderScene() {
-    // setTimeout(() => { this.setState({ showImage: true }) }, 15000)
-    const { height, width, image } = this.props.product;
+    const {
+      product: { height, width, image },
+      meta: { showPointClound }
+    } = this.props;
+
     const widthFormatted = formatDimension(width);
     const heightFormatted = formatDimension(height);
     return (
       <ViroARScene
-        displayPointCloud={this.state.showPointClound && pointCloudOpts}
+        displayPointCloud={showPointClound && pointCloudOpts}
         anchorDetectionTypes={'PlanesHorizontal'}
         onRotate={this.handleRotate}
       >
@@ -153,8 +153,9 @@ var localStyles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ selectedProduct }) => ({
-  product: selectedProduct
+const mapStateToProps = ({ selectedProduct, ARMeta }) => ({
+  product: selectedProduct,
+  meta: ARMeta
 });
 
 export default connect(mapStateToProps)(ARView);
