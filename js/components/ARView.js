@@ -42,28 +42,41 @@ class ARView extends Component {
     super(props);
     this.state = {
       anchorPt: [0, 0, 0],
-      showPointClound: true,
       viroNode: null,
+      ViroARSceneNavigator: null,
       showImage: false
     }
 
     this.renderScene = this.renderScene.bind(this);
+    this.renderEmptyScene = this.renderEmptyScene.bind(this);
     this.handleAnchorFound = this.handleAnchorFound.bind(this);
     this.handleRotate = this.handleRotate.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { showARScene } = nextProps.meta;
+    if (showARScene) {
+      this.ViroARSceneNavigator.replace({ scene: this.renderScene });
+    }
   }
 
   render() {
     return (
       <View style={localStyles.outer}>
         <ViroARSceneNavigator
+          ref={c => { this.ViroARSceneNavigator = c }}
           style={localStyles.arView}
           apiKey={API_KEY}
-          initialScene={{ scene: this.renderScene }}
+          initialScene={{ scene: this.renderEmptyScene }}
         />
         <InstructionCard />
       </View>
     );
+  }
+
+  renderEmptyScene() {
+    return <ViroARScene />
   }
 
   renderScene() {

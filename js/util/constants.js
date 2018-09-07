@@ -4,4 +4,3 @@ export const STEPS_ENUM = {
   INDICATE_WALL_POS: 3,
   DRAG_PIECE: 4
 };
-
