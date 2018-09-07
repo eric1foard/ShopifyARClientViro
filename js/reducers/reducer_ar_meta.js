@@ -4,7 +4,8 @@ import { STEPS_ENUM } from '../util/constants';
 const initState = {
   showARScene: false,
   showPointClound: false,
-  anchorPt: [0,0,0]
+  anchorPt: [0,0,0],
+  showImage: false
 };
 
 export default function reducer(state = initState, action) {
@@ -14,6 +15,7 @@ export default function reducer(state = initState, action) {
             ...state,
             showPointClound: action.payload === STEPS_ENUM.DETECT_FLOOR,
             showARScene: action.payload === STEPS_ENUM.DETECT_FLOOR,
+            showImage: action.payload >= STEPS_ENUM.DRAG_PIECE
           };
       case ANCHOR_FOUND:
           return {

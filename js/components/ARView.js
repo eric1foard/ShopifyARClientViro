@@ -17,7 +17,6 @@ import { foundAnchor } from '../actions';
 const MIN_PLANE_DIMENSION = 0.05;
 const ROTATION_START = 1, ROTATION_END = 3;
 let initialRotation = 0;
-let placementTimeout = null;
 
 // TODO: this will not be needed when store dimensions in meters
 const formatDimension = dim => {
@@ -42,17 +41,16 @@ class ARView extends Component {
 
   constructor(props) {
     super(props);
+    // these are refs and I don't think redux should need to know about them
     this.state = {
       viroNode: null,
-      ViroARSceneNavigator: null,
-      showImage: false
+      ViroARSceneNavigator: null
     }
 
     this.renderScene = this.renderScene.bind(this);
     this.renderEmptyScene = this.renderEmptyScene.bind(this);
     this.handleAnchorFound = this.handleAnchorFound.bind(this);
     this.handleRotate = this.handleRotate.bind(this);
-    this.handleDrag = this.handleDrag.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -83,7 +81,7 @@ class ARView extends Component {
   renderScene() {
     const {
       product: { height, width, image },
-      meta: { showPointClound, anchorPt }
+      meta: { showPointClound, anchorPt, showImage }
     } = this.props;
 
     const widthFormatted = formatDimension(width);
@@ -101,7 +99,7 @@ class ARView extends Component {
           onAnchorFound={this.handleAnchorFound}>
           <ViroNode
             ref={c => this.state.viroNode = c}
-            onDrag={this.handleDrag}
+            onDrag={() => {}}
             dragType='FixedToPlane'
             dragPlane={{
               planePoint: anchorPt,
@@ -112,26 +110,19 @@ class ARView extends Component {
               height={0.01}
               length={0.01}
               width={5}
-              visible={!this.state.showImage}
+              visible={!showImage}
             />
             <ViroImage
               source={{ uri: image }}
               height={heightFormatted}
               width={widthFormatted}
               position={[0, 1.5, 0]}
-              visible={this.state.showImage}
+              visible={showImage}
             />
           </ViroNode>
         </ViroARPlane>
       </ViroARScene>
     );
-  }
-
-  handleDrag(pos) {
-    if (placementTimeout) {
-      clearTimeout(placementTimeout);
-    }
-    placementTimeout = setTimeout(() => { this.setState({ showImage: true }) }, 250);
   }
 
   handleRotate(rotateState, rotationFactor) {
