@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { Card, Text, Button } from 'react-native-elements';
-import { nextInstruction } from '../actions';
+import { nextInstruction, hideCheck } from '../actions';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const {
   height: WINDOW_HEIGHT,
@@ -12,18 +13,29 @@ const {
 const CARD_HEIGHT = WINDOW_HEIGHT / 4;
 
 class InstructionCard extends PureComponent {
+  componentDidUpdate() {
+    console.warn('componentDidUpdate ', this.props.instructions.showCheck)
+    if (this.props.instructions.showCheck) {
+      setTimeout(this.props.hideCheck, 3000);
+    }
+  }
+
   render() {
     const {
       step,
       buttonTitle,
       NUM_STEPS,
       stepText,
-      dismissed
+      dismissed,
+      showCheck
     } = this.props.instructions;
+
+    console.warn('showCheck ', showCheck);
 
     if (dismissed) {
       return null;
     }
+
     return (
       <View style={localStyles.view}>
         <Card
@@ -35,8 +47,10 @@ class InstructionCard extends PureComponent {
             buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0 }}
             title={buttonTitle}
             onPress={() => this.props.nextInstruction(step < NUM_STEPS ? step + 1 : NUM_STEPS)}
-            />
+          />
         </Card>
+        {/* {showCheck && <Icon name='checkmark-circle' style={localStyles.check} />} TODO: uncomment when done developement!! */}
+        <View style={localStyles.check}>✅</View>
       </View>
     );
   }
@@ -51,6 +65,13 @@ var localStyles = StyleSheet.create({
     height: CARD_HEIGHT,
     backgroundColor: 'transparent',
     opacity: 0.8
+  },
+  check: {
+    position: 'absolute',
+    top: WINDOW_HEIGHT / 2,
+    left: WINDOW_WIDTH / 2,
+    // width: 20,
+    // height: 20
   }
 });
 
@@ -59,7 +80,7 @@ const mapStateToProps = ({ instructions }) => ({
 });
 
 const mapDispatchToProps = dispatch => {
-  const actions = { nextInstruction };
+  const actions = { nextInstruction, hideCheck };
   return bindActionCreators(actions, dispatch);
 }
 

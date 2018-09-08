@@ -17,6 +17,8 @@ import { foundAnchor } from '../actions';
 const MIN_PLANE_DIMENSION = 0.05;
 const ROTATION_START = 1, ROTATION_END = 3;
 let initialRotation = 0;
+let currRotation = 0;
+let currPos = [0, 0, 0];
 
 // TODO: this will not be needed when store dimensions in meters
 const formatDimension = dim => {
@@ -97,29 +99,35 @@ class ARView extends Component {
           minWidth={MIN_PLANE_DIMENSION}
           alignment={'Horizontal'}
           onAnchorFound={this.handleAnchorFound}>
-          <ViroNode
+          <ViroBox
             ref={c => this.state.viroNode = c}
-            onDrag={() => {}}
+            onDrag={pos => { currPos = pos; }}
             dragType='FixedToPlane'
             dragPlane={{
               planePoint: anchorPt,
               planeNormal: [0, 1, 0],
               maxDistance: 5
-            }}>
-            <ViroBox
-              height={0.01}
-              length={0.01}
-              width={5}
-              visible={!showImage}
-            />
-            <ViroImage
-              source={{ uri: image }}
-              height={heightFormatted}
-              width={widthFormatted}
-              position={[0, 1.5, 0]}
-              visible={showImage}
-            />
-          </ViroNode>
+            }}
+            height={0.01}
+            length={0.01}
+            width={5}
+            visible={!showImage}
+          />
+          {showImage && <ViroImage
+            onDrag={() => {}}
+            dragType='FixedToPlane'
+            dragPlane={{
+              planePoint: currPos,
+              planeNormal: [0, 0, 1],
+              maxDistance: 5
+            }}
+            source={{ uri: image }}
+            height={heightFormatted}
+            width={widthFormatted}
+            position={[0, 1.5, 0]}
+            rotation={[0, currRotation, 0]}
+            visible={showImage}
+          />}
         </ViroARPlane>
       </ViroARScene>
     );
@@ -132,8 +140,9 @@ class ARView extends Component {
       case ROTATION_END:
         break;
       default: // otherwise, rotation in progress
+        currRotation = initialRotation + rotationFactor;
         this.state.viroNode.setNativeProps({
-          rotation: [0, initialRotation + rotationFactor, 0]
+          rotation: [0, currRotation, 0]
         });
         break;
     }

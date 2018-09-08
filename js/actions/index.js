@@ -57,3 +57,7 @@ export const foundAnchor = payload => ({
   type: types.ANCHOR_FOUND,
   payload
 });
+
+export const hideCheck = () => ({
+  type: types.HIDE_CHECK
+})
