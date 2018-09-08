@@ -29,7 +29,7 @@ const formatDimension = dim => {
 
 const pointCloudOpts = {
   imageSource: require('../res/pointCloudPoint.png'),
-  imageScale: [.02, .02, .02],
+  imageScale: [.01, .01, .01],
   maxPoints: 100
 };
 
@@ -81,7 +81,7 @@ class ARView extends Component {
           initialScene={{ scene: this.renderEmptyScene }}
         />
         <InstructionCard />
-         {/* <Text style={localStyles.check}>✅</Text> */}
+        {/* below line will cause error in development */}
         {showCheck && <Icon name='ios-checkmark-circle' style={localStyles.check} />}
       </View>
     );
