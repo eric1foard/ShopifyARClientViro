@@ -19,7 +19,7 @@ class InstructionCard extends PureComponent {
 
   componentDidUpdate() {
     if (this.props.instructions.showCheck) {
-      setTimeout(this.props.hideCheck, 2000);
+      setTimeout(() => this.nextInstruction(), 2000);
     }
   }
 
@@ -49,9 +49,7 @@ class InstructionCard extends PureComponent {
 
   renderCardButton() {
     const {
-      step,
       buttonTitle,
-      NUM_STEPS,
       buttonDisabled,
       showCheck
     } = this.props.instructions;
@@ -66,13 +64,14 @@ class InstructionCard extends PureComponent {
         backgroundColor='#03A9F4'
         buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0 }}
         title={buttonTitle}
-        onPress={() => this.props.nextInstruction(step < NUM_STEPS ? step + 1 : NUM_STEPS)}
+        onPress={this.nextInstruction}
       />
     );
   }
 
   nextInstruction() {
     const { step, NUM_STEPS } = this.props.instructions;
+    return this.props.nextInstruction(step < NUM_STEPS ? step + 1 : NUM_STEPS)
   }
 }
 
