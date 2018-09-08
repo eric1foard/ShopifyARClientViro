@@ -17,8 +17,7 @@ const initState = {
   dismissed: false,
   buttonTitle: 'Next',
   stepText: STEP_TEXT[STEPS_ENUM.FACE_WALL],
-  NUM_STEPS,
-  showCheck: false
+  NUM_STEPS
 };
 
 export default function reducer(state = initState, action) {
@@ -33,16 +32,6 @@ export default function reducer(state = initState, action) {
         buttonTitle: nextStep < NUM_STEPS ? 'Next' : 'Dismiss',
         stepText: STEP_TEXT[nextStep] || '',
         dismissed: state.step >= NUM_STEPS ? true : false
-      };
-    case ANCHOR_FOUND:
-      return {
-        ...state,
-        showCheck: true
-      };
-    case HIDE_CHECK:
-      return {
-        ...state,
-        showCheck: false
       };
   }
   return state;

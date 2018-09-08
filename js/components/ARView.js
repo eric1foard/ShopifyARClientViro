@@ -2,7 +2,8 @@ import { API_KEY } from '../../env.js';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {
   ViroARSceneNavigator,
   ViroARScene,
@@ -12,7 +13,7 @@ import {
   ViroNode
 } from 'react-viro';
 import InstructionCard from './InstructionCard';
-import { foundAnchor } from '../actions';
+import { foundAnchor, hideCheck } from '../actions';
 
 const MIN_PLANE_DIMENSION = 0.05;
 const ROTATION_START = 1, ROTATION_END = 3;
@@ -55,6 +56,12 @@ class ARView extends Component {
     this.handleRotate = this.handleRotate.bind(this);
   }
 
+  componentDidUpdate() {
+    if (this.props.meta.showCheck) {
+      setTimeout(this.props.hideCheck, 3000);
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     const { showARScene } = nextProps.meta;
     if (showARScene) {
@@ -62,7 +69,9 @@ class ARView extends Component {
     }
   }
 
+  // TODO: support andriod Icon name
   render() {
+    const { showCheck } = this.props.meta;
     return (
       <View style={localStyles.outer}>
         <ViroARSceneNavigator
@@ -72,6 +81,8 @@ class ARView extends Component {
           initialScene={{ scene: this.renderEmptyScene }}
         />
         <InstructionCard />
+         {/* <Text style={localStyles.check}>✅</Text> */}
+        {showCheck && <Icon name='ios-checkmark-circle' style={localStyles.check} />}
       </View>
     );
   }
@@ -162,7 +173,15 @@ var localStyles = StyleSheet.create({
   },
   arView: {
     flex: 1
-  }
+  },
+  check: {
+    position: 'absolute',
+    top: (Dimensions.get('window').height / 2),
+    left: (Dimensions.get('window').width / 2),
+    width: 40,
+    height: 40,
+    backgroundColor: 'black',
+},
 });
 
 const mapStateToProps = ({ selectedProduct, ARMeta }) => ({
@@ -171,7 +190,7 @@ const mapStateToProps = ({ selectedProduct, ARMeta }) => ({
 });
 
 const mapDispatchToProps = dispatch => {
-  const actions = { foundAnchor };
+  const actions = { foundAnchor, hideCheck };
   return bindActionCreators(actions, dispatch);
 }
 
