@@ -1,4 +1,4 @@
-import { SELECT_PRODUCT, NEXT_INSTRUCTION, HIDE_CHECK, ANCHOR_FOUND } from '../actions/types';
+import { SELECT_PRODUCT, NEXT_INSTRUCTION, ANCHOR_FOUND } from '../actions/types';
 import { STEPS_ENUM } from '../util/constants';
 
 const NUM_STEPS = Object.keys(STEPS_ENUM).length;
@@ -17,7 +17,9 @@ const initState = {
   dismissed: false,
   buttonTitle: 'Next',
   stepText: STEP_TEXT[STEPS_ENUM.FACE_WALL],
-  NUM_STEPS
+  NUM_STEPS,
+  buttonDisabled: false,
+  showCheck: false
 };
 
 export default function reducer(state = initState, action) {
@@ -26,13 +28,22 @@ export default function reducer(state = initState, action) {
       return initState;
     case NEXT_INSTRUCTION:
       const nextStep = action.payload;
+      const buttonDisabled = nextStep === STEPS_ENUM.DETECT_FLOOR;
       return {
         ...state,
         step: nextStep,
-        buttonTitle: nextStep < NUM_STEPS ? 'Next' : 'Dismiss',
+        buttonTitle: buttonDisabled ? '' : nextStep < NUM_STEPS ? 'Next' : 'Dismiss',
         stepText: STEP_TEXT[nextStep] || '',
-        dismissed: state.step >= NUM_STEPS ? true : false
+        dismissed: state.step >= NUM_STEPS ? true : false,
+        showCheck: false,
+        buttonDisabled
       };
+    case ANCHOR_FOUND:
+      return {
+        ...state,
+        buttonDisabled: false,
+        showCheck: true
+      }
   }
   return state;
 }

@@ -1,12 +1,11 @@
-import { NEXT_INSTRUCTION, ANCHOR_FOUND, HIDE_CHECK } from '../actions/types';
+import { NEXT_INSTRUCTION, ANCHOR_FOUND } from '../actions/types';
 import { STEPS_ENUM } from '../util/constants';
 
 const initState = {
   showARScene: false,
   showPointClound: false,
   anchorPt: [0,0,0],
-  showImage: false,
-  showCheck: false
+  showImage: false
 };
 
 export default function reducer(state = initState, action) {
@@ -24,12 +23,7 @@ export default function reducer(state = initState, action) {
             showPointClound: false,
             anchorPt: action.payload.anchorPt,
             showCheck: true
-          }
-      case HIDE_CHECK:
-          return {
-            ...state,
-            showCheck: false
-          }
+          };
   }
   return state;
 }
