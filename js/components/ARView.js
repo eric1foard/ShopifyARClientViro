@@ -15,7 +15,6 @@ import { foundAnchor } from '../actions';
 
 const MIN_PLANE_DIMENSION = 0.05;
 const ROTATION_START = 1, ROTATION_END = 3;
-let initialRotation = 0;
 let currRotation = 0;
 let currPos = [0, 0, 0];
 
@@ -140,7 +139,7 @@ class ARView extends Component {
       case ROTATION_END:
         break;
       default: // otherwise, rotation in progress
-        currRotation = initialRotation + rotationFactor;
+        currRotation += rotationFactor/20;
         this.state.viroNode.setNativeProps({
           rotation: [0, currRotation, 0]
         });
@@ -149,7 +148,7 @@ class ARView extends Component {
   }
 
   handleAnchorFound({ position, rotation }) {
-    initialRotation = rotation[1];
+    currRotation = rotation[1];
     this.props.foundAnchor({
       anchorPt: position, // TODO: will this work, or needs to come from state?
     });
