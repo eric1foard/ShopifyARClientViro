@@ -57,3 +57,8 @@ export const foundAnchor = payload => ({
   type: types.ANCHOR_FOUND,
   payload
 });
+
+export const setPlanePoint = payload => ({
+  type: types.SET_PLANE_POINT,
+  payload
+});

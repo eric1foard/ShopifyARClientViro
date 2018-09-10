@@ -8,15 +8,16 @@ import {
   ViroARScene,
   ViroARPlane,
   ViroImage,
-  ViroBox
+  ViroBox,
+  ViroNode
 } from 'react-viro';
 import InstructionCard from './InstructionCard';
-import { foundAnchor } from '../actions';
+import { foundAnchor, setPlanePoint } from '../actions';
 
+const INITAL_IMAGE_HEIGHT = 1.5;
 const MIN_PLANE_DIMENSION = 0.05;
 const ROTATION_START = 1, ROTATION_END = 3;
 let currRotation = 0;
-let currPos = [0, 0, 0];
 
 // TODO: this will not be needed when store dimensions in meters
 const formatDimension = dim => {
@@ -43,7 +44,8 @@ class ARView extends Component {
     super(props);
     // these are refs and I don't think redux should need to know about them
     this.state = {
-      viroNode: null,
+      viroBox: null,
+      viroImage: null,
       ViroARSceneNavigator: null
     }
 
@@ -51,12 +53,22 @@ class ARView extends Component {
     this.renderEmptyScene = this.renderEmptyScene.bind(this);
     this.handleAnchorFound = this.handleAnchorFound.bind(this);
     this.handleRotate = this.handleRotate.bind(this);
+    this.handleCameraTransformUpdate = this.handleCameraTransformUpdate.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { showARScene } = nextProps.meta;
+  componentDidUpdate(prevProps) {
+    const { showARScene, showImage } = this.props.meta;
     if (showARScene) {
       this.ViroARSceneNavigator.replace({ scene: this.renderScene });
+    }
+    if (showImage && !prevProps.meta.showImage) {
+      this.state.viroBox.getTransformAsync()
+        .then(({ rotation, position }) => {
+          this.props.setPlanePoint({
+            planePoint: position,
+            planeRotation: rotation
+          });
+        });
     }
   }
 
@@ -82,7 +94,7 @@ class ARView extends Component {
   renderScene() {
     const {
       product: { height, width, image },
-      meta: { showPointClound, anchorPt, showImage }
+      meta: { showPointClound, anchorPt, showImage, planePoint, planePointFound }
     } = this.props;
 
     const widthFormatted = formatDimension(width);
@@ -92,14 +104,15 @@ class ARView extends Component {
         displayPointCloud={showPointClound && pointCloudOpts}
         anchorDetectionTypes={'PlanesHorizontal'}
         onRotate={this.handleRotate}
+        onCameraTransformUpdate={planePointFound && this.handleCameraTransformUpdate}
       >
         <ViroARPlane
           minHeight={MIN_PLANE_DIMENSION}
           minWidth={MIN_PLANE_DIMENSION}
           alignment={'Horizontal'}
           onAnchorFound={this.handleAnchorFound}>
-          <ViroBox
-            ref={c => this.state.viroNode = c}
+          <ViroNode
+            ref={c => this.state.viroBox = c}
             onDrag={pos => { currPos = pos; }}
             dragType='FixedToPlane'
             dragPlane={{
@@ -107,30 +120,27 @@ class ARView extends Component {
               planeNormal: [0, 1, 0],
               maxDistance: 5
             }}
-            height={0.01}
-            length={0.01}
-            width={5}
-            visible={!showImage}
-          />
-          {showImage && <ViroImage
-            onDrag={() => {}}
-            dragType='FixedToPlane'
-            dragPlane={{
-              planePoint: currPos,
-              planeNormal: [0, 0, 1],
-              maxDistance: 5
-            }}
-            source={{ uri: image }}
-            height={heightFormatted}
-            width={widthFormatted}
-            position={[0, 1.5, 0]}
-            rotation={[0, currRotation, 0]}
-            visible={showImage}
-          />}
+          // position={planePoint}
+          >
+            <ViroBox
+              height={0.01}
+              length={0.01}
+              width={widthFormatted}
+            // visible={!showImage}
+            />
+            <ViroImage
+              ref={c => this.state.viroImage = c}
+              source={{ uri: image }}
+              height={heightFormatted}
+              width={widthFormatted}
+              position={[0, INITAL_IMAGE_HEIGHT, 0]}
+            />
+          </ViroNode>
         </ViroARPlane>
       </ViroARScene>
     );
   }
+
 
   handleRotate(rotateState, rotationFactor) {
     switch (rotateState) {
@@ -139,8 +149,8 @@ class ARView extends Component {
       case ROTATION_END:
         break;
       default: // otherwise, rotation in progress
-        currRotation += rotationFactor/20;
-        this.state.viroNode.setNativeProps({
+        currRotation += rotationFactor / 20;
+        this.state.viroBox.setNativeProps({
           rotation: [0, currRotation, 0]
         });
         break;
@@ -152,6 +162,15 @@ class ARView extends Component {
     this.props.foundAnchor({
       anchorPt: position, // TODO: will this work, or needs to come from state?
     });
+  }
+
+  handleCameraTransformUpdate({ cameraTransform: { forward } }) {
+    const { viroImage } = this.state;
+    viroImage.getTransformAsync().then(({ position }) => {
+      viroImage.setNativeProps({
+        position: [0, -1 * forward[1] * position[2] + INITAL_IMAGE_HEIGHT, 0]
+      })
+    })
   }
 }
 
@@ -170,7 +189,7 @@ const mapStateToProps = ({ selectedProduct, ARMeta }) => ({
 });
 
 const mapDispatchToProps = dispatch => {
-  const actions = { foundAnchor };
+  const actions = { foundAnchor, setPlanePoint };
   return bindActionCreators(actions, dispatch);
 }
 
