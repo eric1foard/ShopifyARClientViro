@@ -126,7 +126,7 @@ class ARView extends Component {
               height={0.01}
               length={0.01}
               width={widthFormatted}
-            // visible={!showImage}
+              visible={!showImage}
             />
             <ViroImage
               ref={c => this.state.viroImage = c}
@@ -134,6 +134,7 @@ class ARView extends Component {
               height={heightFormatted}
               width={widthFormatted}
               position={[0, INITAL_IMAGE_HEIGHT, 0]}
+              visible={showImage}
             />
           </ViroNode>
         </ViroARPlane>
