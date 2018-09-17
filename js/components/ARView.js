@@ -104,7 +104,7 @@ class ARView extends Component {
         displayPointCloud={showPointClound && pointCloudOpts}
         anchorDetectionTypes={'PlanesHorizontal'}
         onRotate={this.handleRotate}
-        onCameraTransformUpdate={planePointFound && this.handleCameraTransformUpdate}
+        onCameraTransformUpdate={(planePointFound || null) && this.handleCameraTransformUpdate}
       >
         <ViroARPlane
           minHeight={MIN_PLANE_DIMENSION}
