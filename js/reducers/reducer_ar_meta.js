@@ -6,6 +6,7 @@ import {
 } from '../actions/types';
 import { STEPS_ENUM } from '../util/constants';
 
+// TODO: clean up this state -- may not need planePoint and planeRotation
 const initState = {
   showARScene: false,
   showPointClound: false,

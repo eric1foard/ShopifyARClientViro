@@ -94,7 +94,7 @@ class ARView extends Component {
   renderScene() {
     const {
       product: { height, width, image },
-      meta: { showPointClound, anchorPt, showImage, planePoint, enableHeightAdjustment }
+      meta: { showPointClound, anchorPt, showImage, enableHeightAdjustment }
     } = this.props;
 
     const widthFormatted = formatDimension(width);
@@ -120,7 +120,6 @@ class ARView extends Component {
               planeNormal: [0, 1, 0],
               maxDistance: 5
             }}
-          // position={planePoint}
           >
             <ViroBox
               height={0.01}
@@ -151,7 +150,7 @@ class ARView extends Component {
       case ROTATION_END:
         break;
       default: // otherwise, rotation in progress
-        currRotation += rotationFactor / 20;
+        currRotation += rotationFactor / 100;
         this.state.viroBox.setNativeProps({
           rotation: [0, currRotation, 0]
         });
