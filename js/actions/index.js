@@ -62,3 +62,7 @@ export const setPlanePoint = payload => ({
   type: types.SET_PLANE_POINT,
   payload
 });
+
+export const setImageHeight = () => ({
+  type: types.SET_IMAGE_HEIGHT
+});

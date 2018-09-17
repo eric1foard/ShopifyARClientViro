@@ -1,4 +1,9 @@
-import { SELECT_PRODUCT, NEXT_INSTRUCTION, ANCHOR_FOUND } from '../actions/types';
+import {
+  SELECT_PRODUCT,
+  NEXT_INSTRUCTION,
+  ANCHOR_FOUND,
+  SET_IMAGE_HEIGHT
+} from '../actions/types';
 import { STEPS_ENUM } from '../util/constants';
 
 const NUM_STEPS = Object.keys(STEPS_ENUM).length;
@@ -23,23 +28,28 @@ const initState = {
   reviewState: false
 };
 
+const nextStateForStep = (nextStep, state) => {
+  const buttonDisabled = nextStep === STEPS_ENUM.DETECT_FLOOR;
+  return {
+    ...state,
+    step: nextStep,
+    buttonTitle: buttonDisabled ? '' : nextStep < NUM_STEPS ? 'Next' : 'Dismiss',
+    stepText: STEP_TEXT[nextStep] || '',
+    dismissed: state.step >= NUM_STEPS ? true : false,
+    showCheck: false,
+    buttonDisabled,
+    reviewState: nextStep === STEPS_ENUM.REVIEW
+  };
+};
+
 export default function reducer(state = initState, action) {
   switch (action.type) {
     case SELECT_PRODUCT:
       return initState;
     case NEXT_INSTRUCTION:
-      const nextStep = action.payload;
-      const buttonDisabled = nextStep === STEPS_ENUM.DETECT_FLOOR;
-      return {
-        ...state,
-        step: nextStep,
-        buttonTitle: buttonDisabled ? '' : nextStep < NUM_STEPS ? 'Next' : 'Dismiss',
-        stepText: STEP_TEXT[nextStep] || '',
-        dismissed: state.step >= NUM_STEPS ? true : false,
-        showCheck: false,
-        buttonDisabled,
-        reviewState: nextStep === STEPS_ENUM.REVIEW
-      };
+      return nextStateForStep(action.payload, state);
+    case SET_IMAGE_HEIGHT:
+      return nextStateForStep(STEPS_ENUM.REVIEW, state);
     case ANCHOR_FOUND:
       return {
         ...state,

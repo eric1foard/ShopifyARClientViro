@@ -12,7 +12,7 @@ import {
   ViroNode
 } from 'react-viro';
 import InstructionCard from './InstructionCard';
-import { foundAnchor, setPlanePoint } from '../actions';
+import { foundAnchor, setPlanePoint, setImageHeight } from '../actions';
 
 const INITAL_IMAGE_HEIGHT = 1.5;
 const MIN_PLANE_DIMENSION = 0.05;
@@ -94,7 +94,7 @@ class ARView extends Component {
   renderScene() {
     const {
       product: { height, width, image },
-      meta: { showPointClound, anchorPt, showImage, planePoint, planePointFound }
+      meta: { showPointClound, anchorPt, showImage, planePoint, enableHeightAdjustment }
     } = this.props;
 
     const widthFormatted = formatDimension(width);
@@ -104,7 +104,7 @@ class ARView extends Component {
         displayPointCloud={showPointClound && pointCloudOpts}
         anchorDetectionTypes={'PlanesHorizontal'}
         onRotate={this.handleRotate}
-        onCameraTransformUpdate={(planePointFound || null) && this.handleCameraTransformUpdate}
+        onCameraTransformUpdate={(enableHeightAdjustment || null) && this.handleCameraTransformUpdate}
       >
         <ViroARPlane
           minHeight={MIN_PLANE_DIMENSION}
@@ -135,6 +135,7 @@ class ARView extends Component {
               width={widthFormatted}
               position={[0, INITAL_IMAGE_HEIGHT, 0]}
               visible={showImage}
+              onClick={this.props.setImageHeight}
             />
           </ViroNode>
         </ViroARPlane>
@@ -190,7 +191,7 @@ const mapStateToProps = ({ selectedProduct, ARMeta }) => ({
 });
 
 const mapDispatchToProps = dispatch => {
-  const actions = { foundAnchor, setPlanePoint };
+  const actions = { foundAnchor, setPlanePoint, setImageHeight };
   return bindActionCreators(actions, dispatch);
 }
 
