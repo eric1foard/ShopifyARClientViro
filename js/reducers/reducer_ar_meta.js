@@ -22,7 +22,7 @@ export default function reducer(state = initState, action) {
         ...state,
         showPointClound: action.payload === STEPS_ENUM.DETECT_FLOOR,
         showARScene: action.payload === STEPS_ENUM.DETECT_FLOOR,
-        showImage: action.payload >= STEPS_ENUM.DRAG_PIECE,
+        showImage: action.payload >= STEPS_ENUM.ADJUST_HEIGHT,
         planePointFound: false
       };
     case ANCHOR_FOUND:

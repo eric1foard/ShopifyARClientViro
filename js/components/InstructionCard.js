@@ -29,6 +29,7 @@ class InstructionCard extends PureComponent {
       NUM_STEPS,
       stepText,
       dismissed,
+      reviewState
     } = this.props.instructions;
 
     if (dismissed) {
@@ -37,9 +38,7 @@ class InstructionCard extends PureComponent {
 
     return (
       <View style={localStyles.view}>
-        <Card
-          title={`Step ${step} of ${NUM_STEPS}`}
-        >
+        <Card title={reviewState ? null : `Step ${step} of ${NUM_STEPS-1}`}>
           <Text>{stepText}</Text>
           {this.renderCardButton()}
         </Card>

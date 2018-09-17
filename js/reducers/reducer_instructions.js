@@ -8,8 +8,8 @@ const STEP_TEXT = [
   'Point your camera at the floor and move it around slowly',
   'using one finger to drag and two to rotate, place the line ' +
   'where the floor meets the wall',
-  'Drag the work to the desired spot on the wall. You can walk ' +
-  'around the room to view the piece from different angles'
+  'Tilt to adjust height',
+  'You can walk around the room to view the piece from different angles'
 ];
 
 const initState = {
@@ -19,7 +19,8 @@ const initState = {
   stepText: STEP_TEXT[STEPS_ENUM.FACE_WALL],
   NUM_STEPS,
   buttonDisabled: false,
-  showCheck: false
+  showCheck: false,
+  reviewState: false
 };
 
 export default function reducer(state = initState, action) {
@@ -36,7 +37,8 @@ export default function reducer(state = initState, action) {
         stepText: STEP_TEXT[nextStep] || '',
         dismissed: state.step >= NUM_STEPS ? true : false,
         showCheck: false,
-        buttonDisabled
+        buttonDisabled,
+        reviewState: nextStep === STEPS_ENUM.REVIEW
       };
     case ANCHOR_FOUND:
       return {
