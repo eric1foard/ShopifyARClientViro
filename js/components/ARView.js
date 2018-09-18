@@ -165,13 +165,12 @@ class ARView extends Component {
     });
   }
 
-  handleCameraTransformUpdate({ cameraTransform: { forward } }) {
+  async handleCameraTransformUpdate({ cameraTransform: { forward } }) {
     const { viroImage } = this.state;
-    viroImage.getTransformAsync().then(({ position }) => {
-      viroImage.setNativeProps({
-        position: [0, -1 * forward[1] * position[2] + INITAL_IMAGE_HEIGHT, 0]
-      })
-    })
+    const { position } = await viroImage.getTransformAsync();
+    await viroImage.setNativeProps({
+      position: [0, -1 * forward[1] * position[2] + INITAL_IMAGE_HEIGHT, 0]
+    });
   }
 }
 
